@@ -184,7 +184,7 @@
       var conflict = 0;
       var n = this.get('n');
       var rows = this.rows();
-      if(col > 3){
+      if(col > n-1){
       diff = col-(n-1)
       col -= diff;
       row += diff;

@@ -78,7 +78,7 @@ window.countNRooksSolutions = function(n) {
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
   var solutionCount = 0;
-  var rooks = 0;
+  var queens = 0;
   var board = new Board({n:n});
   var rows = board.rows();
   var eligCol = [];
@@ -89,23 +89,10 @@ window.findNQueensSolution = function(n) {
 
   var recurse = function(board, row, col){
     //base case
-    if(n === 6){
-      debugger;
-    }
-    if(board.hasAnyColConflicts()){
+    if(board.hasAnyColConflicts() || board.hasAnyRowConflicts() || board.hasAnyMajorDiagonalConflicts() || board.hasAnyMinorDiagonalConflicts()){
       return;
     }
-    if(board.hasAnyRowConflicts()){
-      return;
-    }
-    if(board.hasAnyMajorDiagonalConflicts()){
-      return;
-    }
-    //error in minor diagonal conflicts
-    if(board.hasAnyMinorDiagonalConflicts()){
-      return;
-    }
-    if(rooks === n){
+    if(queens === n){
       solution = board.rows();
       // console.log("Solution count:", solutionCount);
       return;
@@ -117,7 +104,7 @@ window.findNQueensSolution = function(n) {
         }
         rows[row][col] = 1;
         eligCol[col] = false;
-        rooks++;
+        queens++;
 
         recurse(board,row+1,0);
         if(solution !== undefined){
@@ -125,7 +112,7 @@ window.findNQueensSolution = function(n) {
         }
         rows[row][col] = 0;
         eligCol[col] = true;
-        rooks--;
+        queens--;
       }
 
     return;
@@ -135,13 +122,58 @@ window.findNQueensSolution = function(n) {
   recurse(board, 0, 0);
 
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
+  if(solution === undefined){
+    solution = rows;
+  }
   return solution;
 };
 
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solutionCount = 0;
+  var queens = 0;
+  var board = new Board({n:n});
+  var rows = board.rows();
+  var eligCol = [];
+  for(var i=0; i<n ; i++){
+    eligCol.push(true);
+  }
+  var solution = undefined;
+
+  var recurse = function(board, row, col){
+    //base case
+    if(board.hasAnyColConflicts() || board.hasAnyRowConflicts() || board.hasAnyMajorDiagonalConflicts() || board.hasAnyMinorDiagonalConflicts()){
+      return;
+    }
+    if(queens === n){
+      solutionCount++;
+      // console.log("Solution count:", solutionCount);
+      return;
+    }
+    // Recursive Case
+      for(col=0 ;col < n; col++){
+        if(!eligCol[col]){
+          continue;
+        }
+        rows[row][col] = 1;
+        eligCol[col] = false;
+        queens++;
+
+        recurse(board,row+1,0);
+        if(solution !== undefined){
+          return;
+        }
+        rows[row][col] = 0;
+        eligCol[col] = true;
+        queens--;
+      }
+
+    return;
+
+  };
+
+  recurse(board, 0, 0);
 
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
