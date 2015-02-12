@@ -33,27 +33,13 @@ window.countNRooksSolutions = function(n) {
   var rooks = 0;
   var board = new Board({n:n});
   var rows = board.rows();
-  var row = 0;
-  var col = 0;
-  var prevRow = 0;
-  var prevCol = 0;
-  // var step = function(){
-  //   if(col < n-1){
-  //     if(row > prevRow){
-  //       prevRow++;
-  //     }
-  //     prevCol = col;
-  //     col++
-  //   }else if(row < n){
-  //     prevRow = row;
-  //     row++;
-  //     prevCol = col;
-  //     col = 0;
-  //   }
-  // }
+  var eligCol = [];
+  for(var i=0; i<n ; i++){
+    eligCol.push(true);
+  }
+
   var recurse = function(board, row, col){
     //base case
-    console.log("Checking base cases:", JSON.stringify(rows));
     if(board.hasAnyColConflicts() || board.hasAnyRowConflicts()){
       return;
     }
@@ -62,32 +48,27 @@ window.countNRooksSolutions = function(n) {
       console.log("Solution count:", solutionCount);
       return;
     }
-    // if(row>n){
-    //   col = 1;
-    //   row = 0;
-    // }
-    //recursive case
-    // for(;row < 2;row++){
+    // Recursive Case
       for(col=0 ;col < n; col++){
-        //addrook
-        if(n===3){debugger};
+        if(!eligCol[col]){
+          continue;
+        }
         rows[row][col] = 1;
-        console.log("Added rook", JSON.stringify(rows));
+        eligCol[col] = false;
         rooks++;
-        //recurse
+
         recurse(board,row+1,0);
-        //deleted rook
+
         rows[row][col] = 0;
-        console.log("Removed rook", JSON.stringify(rows));
+        eligCol[col] = true;
         rooks--;
       }
-    // //     return;
-    // }
 
     return;
+
   };
 
-  recurse(board, row, col);
+  recurse(board, 0, 0);
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
 };
