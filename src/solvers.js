@@ -89,12 +89,25 @@ window.findNQueensSolution = function(n) {
 
   var recurse = function(board, row, col){
     //base case
-    if(board.hasAnyColConflicts() || board.hasAnyRowConflicts() || board.hasAnyMajorDiagonalConflicts() || board.hasAnyMinorDiagonalConflicts()){
+    if(n === 6){
+      debugger;
+    }
+    if(board.hasAnyColConflicts()){
+      return;
+    }
+    if(board.hasAnyRowConflicts()){
+      return;
+    }
+    if(board.hasAnyMajorDiagonalConflicts()){
+      return;
+    }
+    //error in minor diagonal conflicts
+    if(board.hasAnyMinorDiagonalConflicts()){
       return;
     }
     if(rooks === n){
       solution = board.rows();
-      console.log("Solution count:", solutionCount);
+      // console.log("Solution count:", solutionCount);
       return;
     }
     // Recursive Case
