@@ -37,7 +37,20 @@ window.countNRooksSolutions = function(n) {
   var col = 0;
   var prevRow = 0;
   var prevCol = 0;
-
+  // var step = function(){
+  //   if(col < n-1){
+  //     if(row > prevRow){
+  //       prevRow++;
+  //     }
+  //     prevCol = col;
+  //     col++
+  //   }else if(row < n){
+  //     prevRow = row;
+  //     row++;
+  //     prevCol = col;
+  //     col = 0;
+  //   }
+  // }
   var recurse = function(board, row, col){
     //base case
     console.log("Checking base cases:", JSON.stringify(rows));
@@ -49,35 +62,30 @@ window.countNRooksSolutions = function(n) {
       console.log("Solution count:", solutionCount);
       return;
     }
+    // if(row>n){
+    //   col = 1;
+    //   row = 0;
+    // }
     //recursive case
-    while(row < n){
-      //addrook
-      rows[row][col] = 1;
-      console.log("Added rook", JSON.stringify(rows));
-      rooks++;
-      if(col < n-1){
-        if(row > prevRow){
-          prevRow++;
-        }
-        prevCol = col;
-        col++
-      }else if(row < n){
-        prevRow = row;
-        row++;
-        prevCol = col;
-        col = 0;
+    // for(;row < 2;row++){
+      for(col=0 ;col < n; col++){
+        //addrook
+        if(n===3){debugger};
+        rows[row][col] = 1;
+        console.log("Added rook", JSON.stringify(rows));
+        rooks++;
+        //recurse
+        recurse(board,row+1,0);
+        //deleted rook
+        rows[row][col] = 0;
+        console.log("Removed rook", JSON.stringify(rows));
+        rooks--;
       }
-      //recurse
-      recurse(board,row,col);
-      //deleted rook
-      rows[prevRow][prevCol] = 0;
-      console.log("Removed rook", JSON.stringify(rows));
-      rooks--;
-      if(row === n){return};
-    }
+    // //     return;
+    // }
 
     return;
-  }
+  };
 
   recurse(board, row, col);
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
