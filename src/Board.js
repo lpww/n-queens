@@ -81,6 +81,7 @@
     hasRowConflictAt: function(rowIndex) {
       var row = this.get(rowIndex)
       var conflicts = 0;
+
       for(var i=0 ; i<row.length ; i++){
         conflicts += row[i];
         if(conflicts > 1){
@@ -89,6 +90,7 @@
       }
       return false;
     },
+
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
@@ -184,6 +186,7 @@
       var conflict = 0;
       var n = this.get('n');
       var rows = this.rows();
+
       if(col > n-1){
       diff = col-(n-1)
       col -= diff;
@@ -209,7 +212,148 @@
         }
       }
       return false;
+    },
+
+// BITWISE OPERATORS BELOW
+
+    hasRowConflictAtBIT: function(rowIndex) {
+      var row = this.get(rowIndex)
+      var cases = {};
+      var n = this.get('n');
+      for(var i = 0 ; i < n; i++){
+        cases[Math.pow(2,i)] = 1;
+      }
+      if(!(Math.log(2, row) in cases)){
+        return true;
+      }
+      return false;
+    },
+
+    // test if any rows on this board contain conflicts
+    hasAnyRowConflictsBIT: function() {
+      var n = this.get('n');
+      for(var i = 0; i < n; i++){
+        if(this.hasRowConflictAt(i)){
+          return true;
+        }
+      }
+      return false;
+    },
+
+
+
+    // COLUMNS - run from top to bottom
+    // --------------------------------------------------------------
+    //
+    // test if a specific column on this board contains a conflict
+    hasColConflictAtBIT: function(colIndex) {
+      var rows = this.rows();
+      var conflict = 0;
+      for(var i = 0; i < rows.length; i++){
+        conflict += rows[i][colIndex];
+        if(conflict > 1){
+          return true;
+        }
+      }
+      return false;
+    },
+
+    // test if any columns on this board contain conflicts
+    hasAnyColConflictsBIT: function(board) {
+      var n = board.length;
+      var conflicts = {};
+      for(var i=0 ; i<n ; i++){
+        if(conflicts[board[i]] === undefined){
+          conflicts[board[i]] = true;
+        }else {
+          return true;
+        }
+      }
+    },
+
+//     difference in bit array indexes [at bitArrray row indexes] is the same as the difference between rows, there is a diagonal conflict.
+// diff = row1-row2
+// if(diff === Math.abs((bitArray[index of row value]) - bitArray[index of row value (R lean)]) || Math.abs((bitArray[index of row value]) - bitArray[index of row value (left lean)]) );
+
+    // Major Diagonals - go from top-left to bottom-right
+    // --------------------------------------------------------------
+    //
+    // test if a specific major diagonal on this board contains a conflict
+    hasMajorDiagonalConflictAtBIT: function(majorDiagonalColumnIndexAtFirstRow) {
+      var col = majorDiagonalColumnIndexAtFirstRow;
+      var row = 0;
+      var diff;
+      var count = this.get('n');
+      var conflict = 0;
+      var rows = this.rows();
+
+      if(col < 0){
+        diff = -col;
+        col += diff;
+        row += diff;
+      }
+
+      for(;row < count; col++, row++){
+        conflict += rows[row][col];
+        if(conflict > 1){
+          return true;
+        }
+      }
+
+      return false;
+    },
+
+    // test if any major diagonals on this board contain conflicts
+    hasAnyMajorDiagonalConflictsBIT: function() {
+      var n = this.get('n');
+      for(var i=-(n-2) ; i<n-1 ; i++){
+        if(this.hasMajorDiagonalConflictAt(i)){
+          return true;
+        }
+      }
+      return false;
+    },
+
+
+
+    // Minor Diagonals - go from top-right to bottom-left
+    // --------------------------------------------------------------
+    //
+    // test if a specific minor diagonal on this board contains a conflict
+    hasMinorDiagonalConflictAtBIT: function(minorDiagonalColumnIndexAtFirstRow) {
+      var col = minorDiagonalColumnIndexAtFirstRow;
+      var diff;
+      var row = 0;
+      var conflict = 0;
+      var n = this.get('n');
+      var rows = this.rows();
+      if(col > n-1){
+      diff = col-(n-1)
+      col -= diff;
+      row += diff;
+      }
+
+      for(;row<n; col--, row++){
+        conflict += rows[row][col];
+        if(conflict > 1){
+          return true;
+        }
+      }
+
+      return false;
+    },
+
+    // test if any minor diagonals on this board contain conflicts
+    hasAnyMinorDiagonalConflictsBIT: function() {
+      var n = this.get('n');
+      for(var i = 1; i < ((2*n)-2); i++){
+        if(this.hasMinorDiagonalConflictAt(i)){
+          return true;
+        }
+      }
+      return false;
     }
+
 
     /*--------------------  End of Helper Functions  ---------------------*/
 
